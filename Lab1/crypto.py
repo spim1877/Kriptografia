@@ -1,17 +1,16 @@
 """Assignment 1: Cryptography for CS41 Winter 2020.
 
-Name: <YOUR NAME>
-SUNet: <SUNet ID>
+Name: <Szommer Petra Stefania>
+SUNet: <spim1877>
 
 Replace this placeholder text with a description of this module.
 """
 import utils
-
+import string
 
 #################
 # CAESAR CIPHER #
 #################
-
 def encrypt_caesar(plaintext):
     """Encrypt a plaintext using a Caesar cipher.
 
@@ -23,8 +22,18 @@ def encrypt_caesar(plaintext):
     :returns: The encrypted ciphertext.
     """
     # Your implementation here.
-    raise NotImplementedError('encrypt_caesar is not yet implemented!')
-
+    for c in plaintext:
+        if not(c.isupper()):                                  #Error-handling
+            print("Wrong input parameters")
+            return
+    result = ""
+    for c in plaintext:
+        if (c.isalpha()):
+            ind = (string.ascii_uppercase.index(c.upper()) + 3) % 26
+            result += string.ascii_uppercase[ind]
+        else:
+            result += c
+    return result
 
 def decrypt_caesar(ciphertext):
     """Decrypt a ciphertext using a Caesar cipher.
@@ -37,8 +46,19 @@ def decrypt_caesar(ciphertext):
     :returns: The decrypted plaintext.
     """
     # Your implementation here.
-    raise NotImplementedError('decrypt_caesar is not yet implemented!')
+    result = ""
+    for c in ciphertext:
+        if not(c.isupper()):                                  #Error-handling
+            print("Wrong input parameters")
+            return
 
+        if (c.isalpha()):
+            ind = (string.ascii_uppercase.index(c.upper()) - 3) % 26
+            result += string.ascii_uppercase[ind]
+        else:
+            result += c
+
+    return result
 
 ###################
 # VIGENERE CIPHER #
@@ -56,9 +76,25 @@ def encrypt_vigenere(plaintext, keyword):
 
     :returns: The encrypted ciphertext.
     """
-    # Your implementation here.
-    raise NotImplementedError('encrypt_vigenere is not yet implemented!')
 
+    if not (plaintext.isalpha() and keyword.isalpha()):             #Error-handling
+        print("Wrong input parameter")
+        return
+
+    for c in plaintext:
+        if not(c.isupper()):                                  #Error-handling
+            print("Wrong input parameters")
+            return
+
+    # Your implementation here.
+    enctext = ""
+    i = 0
+    for c in plaintext:
+        if (c.isalpha):
+            ind = (string.ascii_uppercase.index(c.upper()) + string.ascii_uppercase.index(keyword[i%len(keyword)].upper()))%26
+            enctext += string.ascii_uppercase[ind]
+            i += 1
+    return enctext
 
 def decrypt_vigenere(ciphertext, keyword):
     """Decrypt ciphertext using a Vigenere cipher with a keyword.
@@ -73,106 +109,147 @@ def decrypt_vigenere(ciphertext, keyword):
     :returns: The decrypted plaintext.
     """
     # Your implementation here.
-    raise NotImplementedError('decrypt_vigenere is not yet implemented!')
+    if not (ciphertext.isalpha() and keyword.isalpha()):   #Error handling
+        print("Wrong input parameter")
+        return
 
+    for c in ciphertext:
+        if not(c.isupper()):                                  #Error-handling
+            print("Wrong input parameters")
+            return
 
-########################################
-# MERKLE-HELLMAN KNAPSACK CRYPTOSYSTEM #
-########################################
+    for c in keyword:
+        if not(c.isupper()):                                  #Error-handling
+            print("Wrong input parameters")
+            return
 
-def generate_private_key(n=8):
-    """Generate a private key to use with the Merkle-Hellman Knapsack Cryptosystem.
+    dectext = ""
+    i = 0
+    for c in ciphertext:
+        if (c.isalpha):
+            idx = (string.ascii_uppercase.index(c.upper()) - string.ascii_uppercase.index(keyword[i%len(keyword)].upper()))%26
+            dectext += string.ascii_uppercase[idx]
+            i += 1
+    return dectext
 
-    Following the instructions in the handout, construct the private key
-    components of the MH Cryptosystem. This consists of 3 tasks:
+##################
+# SCYTALE CIPHER #
+##################
+def encrypt_scytale(plaintext, circumference):
+    for c in plaintext:
+        if not(c.isupper()):                                  #Error-handling
+            print("Wrong input parameters")
+            return
+    if (type(circumference) != int):
+        print("Wrong input parameter")
+        return
 
-    1. Build a superincreasing sequence `w` of length n
-        Note: You can double-check that a sequence is superincreasing by using:
-            `utils.is_superincreasing(seq)`
-    2. Choose some integer `q` greater than the sum of all elements in `w`
-    3. Discover an integer `r` between 2 and q that is coprime to `q`
-        Note: You can use `utils.coprime(r, q)` for this.
+    enctext = ""
+    n = len(plaintext)
+    for i in range(circumference):
+        x = slice(i, n, circumference)
+        enctext+= plaintext[x]
+    return enctext
 
-    You'll also need to use the random module's `randint` function, which you
-    will have to import.
+def decrypt_scytale(ciphertext, circumference):
+    for c in ciphertext:
+        if(not c.isalpha or not c.isupper):
+            print("Wrong input parameter")
+            return
 
-    Somehow, you'll have to return all three of these values from this function!
-    Can we do that in Python?!
+    if (type(circumference) != int):
+        print("Wrong input parameter")
+        return
 
-    :param n: Bitsize of message to send (defaults to 8)
-    :type n: int
+    dectext = ""
+    end = ""
+    n = len(ciphertext)
+    m = n//circumference
+    r = n%circumference
 
-    :returns: 3-tuple private key `(w, q, r)`, with `w` a n-tuple, and q and r ints.
-    """
-    # Your implementation here.
-    raise NotImplementedError('generate_private_key is not yet implemented!')
+    for i in range(1, r+1):
+        j = i * m
+        end += ciphertext[j]
+        ciphertext = ciphertext[:j] + ciphertext[j+1:]
 
+    for i in range(m):
+        x = slice(i, n, m)
+        dectext+= ciphertext[x]
+    dectext += end
+    return dectext
 
-def create_public_key(private_key):
-    """Create a public key corresponding to the given private key.
+####################
+# RAILFENCE CIPHER #
+####################
 
-    To accomplish this, you only need to build and return `beta` as described in
-    the handout.
+def encrypt_railfence(plaintext, rails):
 
-        beta = (b_1, b_2, ..., b_n) where b_i = r × w_i mod q
+    if (type(rails) != int):
+        print("Wrong input parameter")
+        return
+    for c in plaintext:
+        if not(c.isupper()):                                  #Error-handling
+            print("Wrong input parameters")
+            return
+    enctext = ""
+    rail = [""] * rails
+    i = 0
 
-    Hint: this can be written in one or two lines using list comprehensions.
+    dir = False
+    for c in plaintext:
+        rail[i] += c
+        if i == rails-1:
+            dir = False
+        if i == 0:
+            dir = True
+        if (dir):
+            i+=1
+        else:
+            i-=1
 
-    :param private_key: The private key created by generate_private_key.
-    :type private_key: 3-tuple `(w, q, r)`, with `w` a n-tuple, and q and r ints.
+    enctext = "".join(rail)
+    return enctext
 
-    :returns: n-tuple public key
-    """
-    # Your implementation here.
-    raise NotImplementedError('create_public_key is not yet implemented!')
+def decrypt_railfence(ciphertext, num_rails):
+    for c in ciphertext:
+        if not(c.isupper()):                                  #Error-handling
+            print("Wrong input parameters")
+            return
 
+    if (type(num_rails) != int):
+        print("Wrong input parameter")
+        return
 
-def encrypt_mh(message, public_key):
-    """Encrypt an outgoing message using a public key.
+    dectext = ""
+    n = len(ciphertext)
+    rail = [[' ' for x in range(n)]
+                 for y in range(num_rails)]
 
-    Following the outline of the handout, you will need to:
-    1. Separate the message into chunks based on the size of the public key.
-        In our case, that's the fixed value n = 8, corresponding to a single
-        byte. In principle, we should work for any value of n, but we'll
-        assert that it's fine to operate byte-by-byte.
-    2. For each byte, determine its 8 bits (the `a_i`s). You can use
-        `utils.byte_to_bits(byte)`.
-    3. Encrypt the 8 message bits by computing
-         c = sum of a_i * b_i for i = 1 to n
-    4. Return a list of the encrypted ciphertexts for each chunk of the message.
+    dir = False
+    r = c = 0
+    for i in range(n):
+        if r == 0:
+            dir = True
+        if r == num_rails-1:
+            dir = False
+        rail[r][c] = 'x'
 
-    Hint: Think about using `zip` and other tools we've discussed in class.
+        if dir:
+            r += 1
+        else:
+            r -= 1
+        c += 1
 
-    :param message: The message to be encrypted.
-    :type message: bytes
-    :param public_key: The public key of the message's recipient.
-    :type public_key: n-tuple of ints
+    idx = 0
+    for i in range(num_rails):
+        for j in range(n):
+            if (rail[i][j] != ' ' and idx < n):
+                rail[i][j] = ciphertext[idx]
+                idx+=1
 
-    :returns: Encrypted message bytes represented as a list of ints.
-    """
-    # Your implementation here.
-    raise NotImplementedError('encrypt_mh is not yet implemented!')
+    for j in range(n):
+        for i in range(num_rails):
+                if (rail[i][j] != ' '):
+                    dectext +=rail[i][j]
 
-
-def decrypt_mh(message, private_key):
-    """Decrypt an incoming message using a private key.
-
-    Following the outline of the handout, you will need to:
-    1. Extract w, q, and r from the private key.
-    2. Compute s, the modular inverse of r mod q, using the Extended Euclidean
-        algorithm (implemented for you at `utils.modinv(r, q)`)
-    3. For each byte-sized chunk, compute
-         c' = cs (mod q)
-    4. Solve the superincreasing subset sum problem using c' and w to recover
-        the original plaintext byte.
-    5. Reconstitute the decrypted bytes to form the original message.
-
-    :param message: Encrypted message chunks.
-    :type message: list of ints
-    :param private_key: The private key of the recipient (you).
-    :type private_key: 3-tuple of w, q, and r
-
-    :returns: bytearray or str of decrypted characters
-    """
-    # Your implementation here.
-    raise NotImplementedError('decrypt_mh is not yet implemented!')
+    return dectext

@@ -11,8 +11,9 @@ import random
 
 from crypto import (encrypt_caesar, decrypt_caesar,
                     encrypt_vigenere, decrypt_vigenere,
-                    generate_private_key, create_public_key,
-                    encrypt_mh, decrypt_mh)
+                    encrypt_scytale, decrypt_scytale,
+                    encrypt_railfence, decrypt_railfence
+                    )
 
 HEADER = r"""
    ___________ __ __ ___   ______                 __                               __             ______                       __
@@ -30,9 +31,9 @@ HEADER = r"""
 
 
 def get_cryptosystem():
-    """Ask the user which cryptosystem to use. Always returns a letter in `"CVM"`."""
+    """Ask the user which cryptosystem to use. Always returns a letter in `"CVSR"`."""
     print("* Cryptosystem *")
-    return _get_selection("(C)aesar, (V)igenere or (M)erkle-Hellman? ", "CVM")
+    return _get_selection("(C)aesar, (V)igenere or (S)cytale or (R)ailfence? ", "CVSR")
 
 
 def get_action():
@@ -120,6 +121,13 @@ def clean_vigenere(text):
     """Convert text to a form compatible with the preconditions imposed by Vigenere cipher."""
     return ''.join(ch for ch in text.upper() if ch.isupper())
 
+def clean_scytale(text):
+    """Convert text to a form compatible with the preconditions imposed by Caesar cipher."""
+    return text.upper()
+
+def clean_railfence(text):
+    """Convert text to a form compatible with the preconditions imposed by Caesar cipher."""
+    return text.upper()
 
 def run_caesar(encrypting, data):
     """Run the Caesar cipher cryptosystem."""
@@ -144,32 +152,30 @@ def run_vigenere(encrypting, data):
 
     return (encrypt_vigenere if encrypting else decrypt_vigenere)(data, keyword)
 
+def run_scytale(encrypting, data):
+    data = clean_scytale(data)
 
-def run_merkle_hellman(encrypting, data):
-    """Run the Merkle-Hellman knapsack cryptosystem."""
-    action = get_action()
+    print("* Transform *")
+    circumference = input("Circumference? ")
+    while not circumference:
+        circumference = input("Circumference? ")
 
-    print("* Seed *")
-    seed = input("Set Seed [enter for random]: ")
-    if not seed:
-        random.seed()
-    else:
-        random.seed(seed)
+    print("{}crypting {} using Scytale cipher and circumference {}...".format('En' if encrypting else 'De', data, circumference))
 
-    print("* Building private key...")
+    return (encrypt_scytale if encrypting else decrypt_scytale())(data, int(circumference))
 
-    private_key = generate_private_key()
-    public_key = create_public_key(private_key)
+def run_railfence(encrypting, data):
+    data = clean_railfence(data)
 
-    if encrypting:  # Encrypt
-        print("* Transform *")
-        chunks = encrypt_mh(data, public_key)
-        return ' '.join(map(str, chunks))
-    else:  # Decrypt
-        chunks = [int(line.strip()) for line in data.split() if line.strip()]
-        print("* Transform *")
-        return decrypt_mh(chunks, private_key)
+    print("* Transform *")
+    rails = input("Number of rails? ")
+    while not rails:
+        rails = input("Number of rails? ")
 
+    print("{}crypting {} using Railfence cipher and nr of rails {}...".format('En' if encrypting else 'De', data,
+                                                                              rails))
+
+    return (encrypt_scytale if encrypting else decrypt_scytale())(data, int(rails))
 
 def run_suite():
     """Run a single iteration of the cryptography suite.
@@ -193,7 +199,8 @@ def run_suite():
     commands = {
         'C': run_caesar,         # Caesar Cipher
         'V': run_vigenere,       # Vigenere Cipher
-        'M': run_merkle_hellman  # Merkle-Hellman Knapsack Cryptosystem
+        'S': run_scytale,        # Scytale Chiper
+        'R': run_railfence,      # Railfence Chiper
     }
     output = commands[system](encrypting, data)
     set_output(output)

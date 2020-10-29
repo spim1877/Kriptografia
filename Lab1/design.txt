@@ -1,13 +1,21 @@
-Name: <YOUR NAME>
-SUNet: <SUNet ID>
+Name: <Szommer Petra Stefania>
+SUNet: <spim1877>
 
 In 1-3 sentences per section, comment on your approach to each of the parts of the assignment. What was your high-level strategy? How did you translate that into code? Did you make use of any Pythonic practices? We want you to reflect on your coding style, and how you are maximally leveraging Python's utilities.
 
 # Caesar Cipher
-
+A parameterkent megkapott stringet karakterenkent alakitom at es epitem egy ujabb stringbe.
 
 # Vigenere Cipher
+A parameterkent megkapott stringet karakterenkent alakitom at a kulcsszo segitsegevel es epitem egy ujabb stringbe.
+Az ascii_uppercase string segitsegevel valositom meg.
 
+# Scytale Chiper
+A parameterkent megkapott stringet karakterenkent alakitom at a circumference segitsegevel es epitem egy ujabb stringbe.
+A slice metodus segit abban h a megfelelo betuket vegyem ki az kodolando/dekodolando szovegbol es athelyezzem megoldaskent szolgalo
+stringbe.
 
-# Merkle-Hellman Knapsack Cryptosystem
+# Railfence Chiper
+Egy rails szamu elembol all string tombot hasznalok ami a kulonbozo szintekre kerulo betuket tarolja es a vegen osszeolvasztom oket
+egy szova.
 
